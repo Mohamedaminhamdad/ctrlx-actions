@@ -43,7 +43,7 @@ runs:
 
     - run: |
         echo "$(lsb_release -si)"
-        echo $ {{ matrix.os }}
+        echo "$($ {{ matrix.os }})"
         if [ "$(lsb_release -si)" != "Ubuntu" ]; then 
           echo wrong os
           exit 1
