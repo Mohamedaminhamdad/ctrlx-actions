@@ -42,7 +42,7 @@ runs:
   steps:
 
     - run: |
-        echo $RUNNER_OS
+        echo "$RUNNER_OS"
         echo "$(lsb_release -si)"
         echo "$($ {{ matrix.os }})"
         if [ "$(lsb_release -si)" != "Ubuntu" ]; then 
