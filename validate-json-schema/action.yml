@@ -44,7 +44,8 @@ runs:
         url=https://github.com/boschrexroth/json-schema/tree/master/ctrlx-automation/ctrlx-core/apps/package-manifest
         #link=package-manifest.v1.schema.json
         file=package-manifest.v1.1.schema.json
-        link=$url + "/" + $file
+        link="$url"/"$file"
+        echo $link
         
 
         wget $link -O json-schema.json
