@@ -42,11 +42,8 @@ runs:
   steps:
 
     - run: |
-        echo "$RUNNER_OS"
-        echo "$(lsb_release -si)"
-        echo "$ {{ matrix.os }}"
-        if [ "$(lsb_release -si)" != "Ubuntu" ]; then 
-          echo wrong os
+        if [ "$RUNNER_OS" != "Linux" ]; then
+          echo Error: wrong OS, please select "runs-on: ubuntu-latest"
           exit 1
         fi
       shell: bash
