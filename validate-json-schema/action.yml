@@ -43,7 +43,8 @@ runs:
 
     - run: |
         if [ "$RUNNER_OS" != "Linux" ]; then
-          echo Error: wrong OS, please select "runs-on: ubuntu-latest"; exit $ERRCODE;
+          echo Error: wrong OS, please select "runs-on: ubuntu-latest"
+          exit 95
         fi
       shell: bash
 
