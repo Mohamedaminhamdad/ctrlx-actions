@@ -43,9 +43,11 @@ runs:
     - run: |
         url=https://github.com/boschrexroth/json-schema/tree/master/ctrlx-automation/ctrlx-core/apps/package-manifest
         #link=package-manifest.v1.schema.json
-        link=package-manifest.v1.1.schema.json
+        file=package-manifest.v1.1.schema.json
+        link=$url + "/" + $file
+        
 
-        wget $url + "/" + $link -O json-schema.json
+        wget $link -O json-schema.json
         #cat package-manifest.v1.schema.json
 
         sudo npm install -g ajv-cli
