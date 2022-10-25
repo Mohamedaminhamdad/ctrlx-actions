@@ -42,8 +42,11 @@ runs:
   steps:
 
     - run: |
-        echo "$RUNNER_OS"
         echo "$(lsb_release -si)"
+        if "$(lsb_release -si)"!="Ubuntu"
+        then 
+          exit 1
+        fi
       shell: bash
 
     - run: |
