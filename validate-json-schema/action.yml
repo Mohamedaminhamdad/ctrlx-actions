@@ -43,8 +43,8 @@ runs:
 
     - run: |
         echo "$(lsb_release -si)"
-        if [[ "$(lsb_release -si)"!="Ubuntu" ]]
-        then 
+        if [ "$(lsb_release -si)" != "Ubuntu" ]; then 
+          echo wrong os
           exit 1
         fi
       shell: bash
