@@ -43,7 +43,7 @@ runs:
 
     - run: |
         echo "$(lsb_release -si)"
-        if "$(lsb_release -si)"!="Ubuntu"
+        if [[ "$(lsb_release -si)"!="Ubuntu" ]]
         then 
           exit 1
         fi
