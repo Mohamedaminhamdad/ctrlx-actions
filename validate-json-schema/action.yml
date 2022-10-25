@@ -41,6 +41,13 @@ runs:
   steps:
 
     - run: |
+        url=https://github.com/boschrexroth/json-schema/tree/master/ctrlx-automation/ctrlx-core/apps/package-manifest
+        #link=package-manifest.v1.schema.json
+        link=package-manifest.v1.1.schema.json
+
+        wget $url + "/" + $link -O json-schema.json
+        #cat package-manifest.v1.schema.json
+
         sudo npm install -g ajv-cli
-        ajv validate -s ${{ inputs.json-schema }} -d ${{ inputs.json-file }} ${{ inputs.ajv-options }}
+        ajv validate -s json-schema.json -d ${{ inputs.json-file }} ${{ inputs.ajv-options }}
       shell: bash
