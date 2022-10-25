@@ -44,7 +44,6 @@ runs:
     - run: |
         if [ "$RUNNER_OS" != "Linux" ]; then
           echo "::error::wrong OS, please select runs-on: ubuntu-latest" && exit 1
-          exit 95
         fi
       shell: bash
 
