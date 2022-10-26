@@ -29,6 +29,11 @@ inputs:
     description: 'Architecture to build'
     required: true
 
+outputs:
+  path:
+    description: 'Absolute path to the snap'
+    value: ${{ steps.build-snap.outputs.path }}
+
 runs:
   using: "composite"
   steps:
@@ -41,7 +46,10 @@ runs:
         sudo sed -i 's/deb http/deb [arch=amd64] http/g' /etc/apt/sources.list 
       shell: bash
     
-    - run: |
+    - id: build-snap
+      run: |
         snapcraft clean --destructive-mode
         snapcraft --destructive-mode --target-arch=${{ inputs.architecture }} --enable-experimental-target-arch
+        echo "$(realpath "$(find -name '*${{ inputs.architecture }}.snap')")"
+        echo "path="$(realpath "$(find -name '*${{ inputs.architecture }}.snap')")"" >> $GITHUB_OUPUT
       shell: bash
