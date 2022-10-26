@@ -48,7 +48,7 @@ runs:
     
     - id: build-snap
       run: |
-        echo "path-test=$(echo $RANDOM)" >> "$GITHUB_OUPUT"
+        echo "path-test=$(echo $RANDOM)" >> $GITHUB_OUPUT
         snapcraft clean --destructive-mode
         snapcraft --destructive-mode --target-arch=${{ inputs.architecture }} --enable-experimental-target-arch
         echo "$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
