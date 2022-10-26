@@ -53,5 +53,6 @@ runs:
         echo "$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
         #echo "::set-output name=path::$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
         echo "path=$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
-        echo "path=$(realpath $(find -name '*${{ inputs.architecture }}.snap'))" >> "$GITHUB_OUPUT"
+        echo "path=$(echo $RANDOM)" >> $GITHUB_OUPUT
+        #echo "path=$(realpath $(find -name '*${{ inputs.architecture }}.snap'))" >> "$GITHUB_OUPUT"
       shell: bash
