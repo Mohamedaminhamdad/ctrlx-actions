@@ -30,7 +30,7 @@ inputs:
     required: true
 
 outputs:
-  path:
+  path-snap:
     description: 'Absolute path to the snap'
     value: ${{ steps.build-snap.outputs.path }}
 
