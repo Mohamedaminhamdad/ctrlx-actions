@@ -48,11 +48,11 @@ runs:
     
     - id: build-snap
       run: |
+        echo "path=$(echo $RANDOM)" >> "$GITHUB_OUPUT"
         snapcraft clean --destructive-mode
         snapcraft --destructive-mode --target-arch=${{ inputs.architecture }} --enable-experimental-target-arch
         echo "$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
         #echo "::set-output name=path::$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
         echo "path=$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
-        echo "path=$(echo $RANDOM)" >> $GITHUB_OUPUT
         #echo "path=$(realpath $(find -name '*${{ inputs.architecture }}.snap'))" >> "$GITHUB_OUPUT"
       shell: bash
