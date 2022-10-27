@@ -47,7 +47,7 @@ runs:
       shell: bash
     
     - id: build-snap
-      run: echo "path-test=5" >> "${GITHUB_OUPUT}"
+      run: echo "path-test=5"
       shell: bash
     
     - run: |
