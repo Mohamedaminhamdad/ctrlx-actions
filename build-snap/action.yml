@@ -37,7 +37,7 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - run: echo "::error::wrong OS, please select runs-on: ubuntu-latest" && exit 1
+    - run: "echo ::error::wrong OS, please select runs-on: ubuntu-latest && exit 1"
       if: runner.os != 'linux'
 
     - run: |
