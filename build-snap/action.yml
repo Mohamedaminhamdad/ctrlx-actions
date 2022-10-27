@@ -37,7 +37,9 @@ outputs:
 runs:
   using: "composite"
   steps:
-    if: runner.os == 'linux'
+    - run: echo "::error::wrong OS, please select runs-on: ubuntu-latest" && exit 1
+      if: runner.os != 'linux'
+
     - run: |
         sudo snap install snapcraft --classic
         sudo dpkg --add-architecture arm64
