@@ -39,6 +39,7 @@ runs:
   steps:
     - run: "echo ::error::wrong OS, please select runs-on: ubuntu-latest && exit 1"
       if: runner.os != 'linux'
+      shell: bash
 
     - run: |
         sudo snap install snapcraft --classic
