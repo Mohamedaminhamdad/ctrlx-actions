@@ -50,7 +50,7 @@ runs:
       run: echo "path-test=5" >> $GITHUB_OUPUT
       shell: bash
     
-      run: |
+    - run: |
         echo "path-test=5" >> $GITHUB_OUPUT
         snapcraft clean --destructive-mode
         snapcraft --destructive-mode --target-arch=${{ inputs.architecture }} --enable-experimental-target-arch
