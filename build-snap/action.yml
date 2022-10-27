@@ -35,10 +35,9 @@ outputs:
     value: ${{ steps.build-snap.outputs.path-test }}
 
 runs:
-  if: runner.os == 'linux'
   using: "composite"
   steps:
-
+    if: runner.os == 'linux'
     - run: |
         sudo snap install snapcraft --classic
         sudo dpkg --add-architecture arm64
