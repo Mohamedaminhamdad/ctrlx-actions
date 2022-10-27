@@ -47,15 +47,10 @@ runs:
       shell: bash
     
     - id: build-snap
-      run: echo "path-test=5"
-      shell: bash
-    
-    - run: |
-        echo "path-test=5" >> $GITHUB_OUPUT
+      run: |
         snapcraft clean --destructive-mode
         snapcraft --destructive-mode --target-arch=${{ inputs.architecture }} --enable-experimental-target-arch
         echo "$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
-        #echo "::set-output name=path::$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
-        echo "path=$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
-        #echo "path=$(realpath $(find -name '*${{ inputs.architecture }}.snap'))" >> "$GITHUB_OUPUT"
+        echo "::set-output name=path-test::$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
+        #echo "path-test=$(realpath $(find -name '*${{ inputs.architecture }}.snap'))" >> "$GITHUB_OUPUT"
       shell: bash
