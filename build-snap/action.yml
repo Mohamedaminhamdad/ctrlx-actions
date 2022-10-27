@@ -38,7 +38,7 @@ runs:
   using: "composite"
   steps:
 
-    - run: ehco matrix.os
+    - run: echo $(matrix.os)
       shell: bash
 
     - run: "echo ::error::wrong OS, please select runs-on: ubuntu-latest && exit 1"
