@@ -35,6 +35,7 @@ outputs:
     value: ${{ steps.build-snap.outputs.path-test }}
 
 runs:
+  pre-if: runner.os == 'linux'
   using: "composite"
   steps:
 
