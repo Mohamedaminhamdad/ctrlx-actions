@@ -20,14 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-name: 'Ctrlx Build Snap'
-description: 'Building Ctrlx snap'
+name: 'ctrlX Build Snap'
+description: 'Building ctrlX snap'
 author: 'Bosch Rexroth AG'
 
 inputs:
   architecture:
     description: 'Architecture to build'
     required: true
+  path:
+    description: 'path to snap/snapcraft.yaml'
+    required: false
+    default: ''
 
 outputs:
   path-snap:
@@ -38,6 +42,10 @@ runs:
   using: "composite"
   steps:
 
+    - run: "echo ::error::wrong OS, please select runs-on: ubuntu-latest && exit 1"
+      if: runner.os != 'linux'
+      shell: bash
+      
     - run: |
         sudo snap install snapcraft --classic
         sudo dpkg --add-architecture arm64
@@ -48,7 +56,9 @@ runs:
     
     - id: build-snap
       run: |
+        cd ${{ inputs.path }}
         snapcraft clean --destructive-mode
         snapcraft --destructive-mode --target-arch=${{ inputs.architecture }} --enable-experimental-target-arch
         echo "::set-output name=path-test::$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
+        cd
       shell: bash
