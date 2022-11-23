@@ -1,8 +1,9 @@
 name: Update Major Release Tag
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      -v**
 
 jobs:
   update-tag:
