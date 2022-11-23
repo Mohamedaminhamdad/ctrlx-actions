@@ -9,8 +9,10 @@ jobs:
   update-tag:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Get major version num and update tag
+      - 
+        uses: actions/checkout@v3
+      - 
+        name: Update major version by each new tag
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
           MAJOR=${VERSION%%.*}
