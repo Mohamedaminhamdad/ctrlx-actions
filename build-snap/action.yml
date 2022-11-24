@@ -56,7 +56,7 @@ runs:
     
     - id: build-snap
       run: |
-        cd ${{ inputs.path }}
+        cd ${{ inputs.path-snapcraft-yml }}
         snapcraft clean --destructive-mode
         snapcraft --destructive-mode --target-arch=${{ inputs.architecture }} --enable-experimental-target-arch
         echo "::set-output name=path-test::$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
