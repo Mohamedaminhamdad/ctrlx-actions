@@ -36,7 +36,7 @@ inputs:
 outputs:
   path-snap:
     description: 'Absolute path to the snap'
-    value: ${{ steps.build-snap.outputs.path-test }}
+    value: $(realpath $(find -name '*${{ inputs.architecture }}.snap'))
 
 runs:
   using: "composite"
@@ -60,5 +60,5 @@ runs:
         snapcraft clean --destructive-mode
         snapcraft --destructive-mode --target-arch=${{ inputs.architecture }} --enable-experimental-target-arch
         #echo "::set-output name=path-test::$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
-        echo "path-snap=$(realpath $(find -name '*${{ inputs.architecture }}.snap'))" >> $GITHUB_OUTPUT
+        #echo "path-snap=$(realpath $(find -name '*${{ inputs.architecture }}.snap'))" >> $GITHUB_OUTPUT
       shell: bash
