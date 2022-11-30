@@ -49,6 +49,10 @@ inputs:
     description: 'Options to configure the Use Networking'
     required: false
     default: hostfwd=tcp::8022-:22,hostfwd=tcp::8443-:443,hostfwd=tcp::8740-:11740,hostfwd=tcp::4840-:4840,hostfwd=tcp::2069-:2069,hostfwd=tcp::2070-:2070
+  path-img:
+    description: 'Path to the imgs'
+    required: false
+    default: ''
 
 runs:
   using: "composite"
@@ -59,6 +63,7 @@ runs:
         #sudo apt-get install git-lfs
         #git lfs pull
         sudo apt-get install qemu-system-x86
+        cd $path-img
 
         #Create ctrlX OS
         sudo qemu-img create -f qcow2 -b virtual-control.base.qcow2 -F qcow2 ${{ inputs.img-name }}.user.qcow2
