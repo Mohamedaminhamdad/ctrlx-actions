@@ -1,0 +1,80 @@
+# MIT License
+
+# Copyright (c) 2022 Bosch Rexroth AG
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+name: 'Start ctrlX OS'
+description: 'This action starts a ctrlX OS'
+author: 'Bosch Rexroth AG'
+
+inputs:
+  hostname:
+    description: 'hostname of ctrlX OS'
+    required: false
+    default: ctrlX OS
+  img-name:
+    description: 'name of qcow2 image file name'
+    required: false
+    default: ctrlx-os
+  smp:
+    description: 'Number of CPUs used for symmetric multiprocessing'
+    required: false
+    default: 2
+  memory:
+    description: 'Sets guest startup RAM size'
+    required: false
+    default: 2G
+  netdev-id:
+    description: 'Name of network backend'
+    required: false
+    default: eth0
+  netdev-options:
+    description: 'Options to configure the Use Networking'
+    required: false
+    default: hostfwd=tcp::8022-:22,hostfwd=tcp::8443-:443,hostfwd=tcp::8740-:11740,hostfwd=tcp::4840-:4840,hostfwd=tcp::2069-:2069,hostfwd=tcp::2070-:2070
+
+runs:
+  using: "composite"
+  steps:
+
+    - run: |
+        sudo apt-get update
+        #sudo apt-get install git-lfs
+        #git lfs pull
+        sudo apt-get install qemu-system-x86
+
+        #Create ctrlX OS
+        sudo qemu-img create -f qcow2 -b virtual-control.base.qcow2 -F qcow2 ${{ inputs.img-name }}.user.qcow2
+        
+        #Start ctrlX OS
+        sudo qemu-system-x86_64 \
+          -machine q35,accel=xen:tcg \
+          -smp ${{ inputs.smp }} \
+          -m ${{ inputs.memory }} \
+          -netdev user,id=${{ inputs.netdev-id }},${{ inputs.netdev-options }} \
+          -device virtio-net-pci,netdev=${{ inputs.netdev-id }},mac=DE-AD-BE-00-00-03 \
+          -drive "file=${{ inputs.img-name }}.user.qcow2,media=disk" \
+          -kernel "kernel.img" \
+          -initrd "initrd.img" \
+          -net user,restrict=off \
+          -display none \
+          -daemonize  \
+          -append "earlycon clk_ignore_unused rng_core.default_quality=700 panic=-1 systemd.gpt_auto=0 rd.systemd.unit=basic.target snapd_recovery_mode=run console=ttyS0 console=tty1 net.ifnames=0 hostname=${{ inputs.hostname }} usage=evaluation ctrlx-fpga-virtual.virtual=1 ctrlx-ecm.port1=XF50" \
+      shell: bash
