@@ -64,8 +64,8 @@ runs:
         #git lfs pull
         sudo apt-get install qemu-system-x86
         ls
-        echo $path-img
-        cd $path-img
+        echo ${{ inputs.path-img }}
+        cd ${{ inputs.path-img }}
 
         #Create ctrlX OS
         sudo qemu-img create -f qcow2 -b virtual-control.base.qcow2 -F qcow2 ${{ inputs.img-name }}.user.qcow2
