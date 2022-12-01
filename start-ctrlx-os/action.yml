@@ -52,7 +52,7 @@ inputs:
   path-img:
     description: 'Path to the imgs'
     required: false
-    default: ''
+    default: ${{ env.GITHUB_WORKSPACE }}
 
 runs:
   using: "composite"
@@ -60,11 +60,8 @@ runs:
 
     - run: |
         sudo apt-get update
-        #sudo apt-get install git-lfs
-        #git lfs pull
         sudo apt-get install qemu-system-x86
-        ls
-        echo ${{ inputs.path-img }}
+        echo "Directory of images: ${{ inputs.path-img }}"
         cd ${{ inputs.path-img }}
 
         #Create ctrlX OS
@@ -83,5 +80,5 @@ runs:
           -net user,restrict=off \
           -display none \
           -daemonize  \
-          -append "earlycon clk_ignore_unused rng_core.default_quality=700 panic=-1 systemd.gpt_auto=0 rd.systemd.unit=basic.target snapd_recovery_mode=run console=ttyS0 console=tty1 net.ifnames=0 hostname=${{ inputs.hostname }} usage=evaluation ctrlx-fpga-virtual.virtual=1 ctrlx-ecm.port1=XF50" \
+          -append "earlycon clk_ignore_unused rng_core.default_quality=700 panic=-1 systemd.gpt_auto=0 rd.systemd.unit=basic.target snapd_recovery_mode=run console=ttyS0 console=tty1 net.ifnames=0 hostname=${{ inputs.hostname }} usage=evaluation ctrlx-fpga-virtual.virtual=1 ctrlx-ecm.port1=XF50"
       shell: bash
