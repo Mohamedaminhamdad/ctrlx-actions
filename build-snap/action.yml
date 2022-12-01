@@ -31,12 +31,11 @@ inputs:
   path-app:
     description: 'Realtive path to snap/snapcraft.yaml'
     required: false
-    default: ''
+    default: ${{ env.GITHUB_WORKSPACE }}
 
 outputs:
   path-snap:
     description: 'Absolute path to the snap'
-    value: $(realpath $(find -name '*${{ inputs.architecture }}.snap'))
 
 runs:
   using: "composite"
@@ -59,6 +58,5 @@ runs:
         cd ${{ inputs.path-app }}
         snapcraft clean --destructive-mode
         snapcraft --destructive-mode --target-arch=${{ inputs.architecture }} --enable-experimental-target-arch
-        #echo "::set-output name=path-test::$(realpath $(find -name '*${{ inputs.architecture }}.snap'))"
-        #echo "path-snap=$(realpath $(find -name '*${{ inputs.architecture }}.snap'))" >> $GITHUB_OUTPUT
+        echo "path-snap=$(realpath $(find -name '*${{ inputs.architecture }}.snap'))" >> $GITHUB_OUTPUT
       shell: bash
