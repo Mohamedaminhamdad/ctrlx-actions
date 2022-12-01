@@ -65,10 +65,10 @@ runs:
         sudo apt-get install qemu-system-x86
         ls
         echo ${{ inputs.path-img }}
-        cd ${{ inputs.path-img }}
+        #cd ${{ inputs.path-img }}
 
         #Create ctrlX OS
-        sudo qemu-img create -f qcow2 -b virtual-control.base.qcow2 -F qcow2 ${{ inputs.img-name }}.user.qcow2
+        sudo qemu-img create -f qcow2 -b ${{ inputs.path-img }}/virtual-control.base.qcow2 -F qcow2 ${{ inputs.path-img }}/${{ inputs.img-name }}.user.qcow2
         
         #Start ctrlX OS
         sudo qemu-system-x86_64 \
@@ -77,9 +77,9 @@ runs:
           -m ${{ inputs.memory }} \
           -netdev user,id=${{ inputs.netdev-id }},${{ inputs.netdev-options }} \
           -device virtio-net-pci,netdev=${{ inputs.netdev-id }},mac=DE-AD-BE-00-00-03 \
-          -drive "file=${{ inputs.img-name }}.user.qcow2,media=disk" \
-          -kernel "kernel.img" \
-          -initrd "initrd.img" \
+          -drive "file=${{ inputs.path-img }}/${{ inputs.img-name }}.user.qcow2,media=disk" \
+          -kernel "${{ inputs.path-img }}/kernel.img" \
+          -initrd "${{ inputs.path-img }}/initrd.img" \
           -net user,restrict=off \
           -display none \
           -daemonize  \
