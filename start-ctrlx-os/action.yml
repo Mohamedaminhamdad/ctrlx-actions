@@ -52,7 +52,7 @@ inputs:
   path-img:
     description: 'Path to the imgs'
     required: false
-    default: ${{ env.GITHUB_WORKSPACE }}
+    default: $GITHUB_WORKSPACE
 
 runs:
   using: "composite"
