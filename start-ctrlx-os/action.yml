@@ -38,11 +38,11 @@ inputs:
     required: false
     default: "virtual-control.base.qcow2"
   kernel-img:
-    description: 'name of qcow2 image file name'
+    description: 'name of kernel image file'
     required: false
     default: "kernel.img"
   initrd-img:
-    description: 'name of qcow2 image file name'
+    description: 'name of initrd image file'
     required: false
     default: "initrd.img"
   smp:
@@ -82,10 +82,10 @@ runs:
         cd ${{ inputs.path-img }}
 
         #Check for images
-        if [ -f "${{ base-img  }}" ] && [ -f "${{ kernel-img  }}" ] && [ -f "${{ initrd-img  }}" ]
+        if [ -f "${{ inputs.base-img }}" ] && [ -f "${{ inputs.kernel-img  }}" ] && [ -f "${{ inputs.initrd-img  }}" ]
         then 
           #Create ctrlX OS
-          sudo qemu-img create -f qcow2 -b ${{ base-img  }} -F qcow2 ${{ user-img  }}
+          sudo qemu-img create -f qcow2 -b ${{ inputs.base-img }} -F qcow2 ${{ inputs.user-img  }}
           
           #Start ctrlX OS
           sudo qemu-system-x86_64 \
@@ -94,9 +94,9 @@ runs:
             -m ${{ inputs.memory }} \
             -netdev user,id=${{ inputs.netdev-id }},${{ inputs.netdev-options }} \
             -device virtio-net-pci,netdev=${{ inputs.netdev-id }},mac=DE-AD-BE-00-00-03 \
-            -drive "file=${{ user-img  }},media=disk" \
-            -kernel "${{ kernel-img  }}" \
-            -initrd "${{ initrd-img  }}" \
+            -drive "file=${{ inputs.user-img  }},media=disk" \
+            -kernel "${{ inputs.kernel-img  }}" \
+            -initrd "${{ inputsinitrd-img  }}" \
             -net user,restrict=off \
             -display none \
             -daemonize  \
