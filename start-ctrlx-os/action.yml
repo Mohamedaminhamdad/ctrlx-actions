@@ -92,6 +92,4 @@ runs:
         else
             echo ::error::ctrlX images are missing && exit 1
         fi
-
-
-        shell: bash
+      shell: bash
