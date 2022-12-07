@@ -96,7 +96,7 @@ runs:
             -device virtio-net-pci,netdev=${{ inputs.netdev-id }},mac=DE-AD-BE-00-00-03 \
             -drive "file=${{ inputs.user-img  }},media=disk" \
             -kernel "${{ inputs.kernel-img  }}" \
-            -initrd "${{ inputsinitrd-img  }}" \
+            -initrd "${{ inputs.initrd-img  }}" \
             -net user,restrict=off \
             -display none \
             -daemonize  \
