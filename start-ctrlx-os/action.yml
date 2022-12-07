@@ -58,27 +58,40 @@ runs:
   using: "composite"
   steps:
 
+    - run: "echo ::error::wrong OS, please select runs-on: ubuntu-latest && exit 1"
+      if: runner.os != 'linux'
+      shell: bash
+
     - run: |
+        #Install dependencies
         sudo apt-get update
         sudo apt-get install qemu-system-x86
         echo "Directory of images: ${{ inputs.path-img }}"
         cd ${{ inputs.path-img }}
 
-        #Create ctrlX OS
-        sudo qemu-img create -f qcow2 -b virtual-control.base.qcow2 -F qcow2 ${{ inputs.img-name }}.user.qcow2
-        
-        #Start ctrlX OS
-        sudo qemu-system-x86_64 \
-          -machine q35,accel=xen:tcg \
-          -smp ${{ inputs.smp }} \
-          -m ${{ inputs.memory }} \
-          -netdev user,id=${{ inputs.netdev-id }},${{ inputs.netdev-options }} \
-          -device virtio-net-pci,netdev=${{ inputs.netdev-id }},mac=DE-AD-BE-00-00-03 \
-          -drive "file=${{ inputs.img-name }}.user.qcow2,media=disk" \
-          -kernel "kernel.img" \
-          -initrd "initrd.img" \
-          -net user,restrict=off \
-          -display none \
-          -daemonize  \
-          -append "earlycon clk_ignore_unused rng_core.default_quality=700 panic=-1 systemd.gpt_auto=0 rd.systemd.unit=basic.target snapd_recovery_mode=run console=ttyS0 console=tty1 net.ifnames=0 hostname=${{ inputs.hostname }} usage=evaluation ctrlx-fpga-virtual.virtual=1 ctrlx-ecm.port1=XF50"
-      shell: bash
+        #Check for images
+        if [ -f "${{ inputs.img-name }}.user.qcow2" ] && [ -f "kernel.img" ] && [ -f "initrd.img" ]
+        then 
+          #Create ctrlX OS
+          sudo qemu-img create -f qcow2 -b virtual-control.base.qcow2 -F qcow2 ${{ inputs.img-name }}.user.qcow2
+          
+          #Start ctrlX OS
+          sudo qemu-system-x86_64 \
+            -machine q35,accel=xen:tcg \
+            -smp ${{ inputs.smp }} \
+            -m ${{ inputs.memory }} \
+            -netdev user,id=${{ inputs.netdev-id }},${{ inputs.netdev-options }} \
+            -device virtio-net-pci,netdev=${{ inputs.netdev-id }},mac=DE-AD-BE-00-00-03 \
+            -drive "file=${{ inputs.img-name }}.user.qcow2,media=disk" \
+            -kernel "kernel.img" \
+            -initrd "initrd.img" \
+            -net user,restrict=off \
+            -display none \
+            -daemonize  \
+            -append "earlycon clk_ignore_unused rng_core.default_quality=700 panic=-1 systemd.gpt_auto=0 rd.systemd.unit=basic.target snapd_recovery_mode=run console=ttyS0 console=tty1 net.ifnames=0 hostname=${{ inputs.hostname }} usage=evaluation ctrlx-fpga-virtual.virtual=1 ctrlx-ecm.port1=XF50"      
+        else
+            echo ::error::ctrlX images are missing && exit 1
+        fi
+
+
+        shell: bash
