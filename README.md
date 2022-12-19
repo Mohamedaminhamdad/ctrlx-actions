@@ -1,5 +1,8 @@
 # Actions to build Apps for ctrlX
-GitHub Actions to build Apps for the [ctrlX Core](https://apps.boschrexroth.com/microsites/ctrlx-automation/en/portfolio/ctrlx-core/) from [Bosch Rexroth](https://www.boschrexroth.com/).
+
+This repository contains GitHub Actions to build Apps for [ctrlX OS](https://apps.boschrexroth.com/microsites/ctrlx-automation/en/portfolio/ctrlx-os/) and [ctrlX CORE](https://apps.boschrexroth.com/microsites/ctrlx-automation/en/portfolio/ctrlx-core/) from [Bosch Rexroth](https://www.boschrexroth.com/).
+
+You can use these actions in your repositories workflows to easily create an automated CI/CD pipeline. There are multiple actions that support you in different task (e.g. building, cross-compiling for ARM64, validation of json files, ...). 
 
 * [Usage](#usage)
   * [Build Snap](#build-snap)
@@ -14,19 +17,22 @@ GitHub Actions to build Apps for the [ctrlX Core](https://apps.boschrexroth.com/
 ___
 
 ## Usage
-The examples below shows how to use this action in your GitHub Workflow. 
+
+The examples below show how to use the different actions in your GitHub Workflow. 
 
 ### Build Snap
-Create snap for amd64 architecture (for Virtual Control)
 
 #### Example - Build Snap
+
+Build a snap for amd64 architecture (e.g. for ctrlX CORE X7 or ctrlX COREvirtual).
+
 ```yaml
-name: build ctrlX snap
+name: build ctrlX Snap (amd64)
 
 on: push
 
 jobs:
-  ctrlX:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,26 +40,28 @@ jobs:
         name: Checkout
         uses: actions/checkout@v3
       - 
-        name: Build ctrlX snap
+        name: Build the Snap
+        id: build-snap
         uses: boschrexroth/ctrlx-actions/build-snap@v1
         with: 
-            architecture: amd64 #required (amd64/arm64)
+            architecture: amd64 # required ('amd64' or 'arm64')
       - 
         name: Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v0.0.1
-          files: '*.snap'
+          files: ${{steps.build-snap.outputs.path-snap}}
 ```
 
-Create snap for arm64 architecture (for physical ctrlX)
+Build a snap for arm64 architecture (e.g. for ctrlX CORE X3).
+
 ```yaml
-name: build ctrlX snap
+name: build ctrlX Snap (arm64)
 
 on: push
 
 jobs:
-  ctrlX:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -61,71 +69,109 @@ jobs:
         name: Checkout
         uses: actions/checkout@v3
       - 
-        name: Build ctrlX snap
+        name: Build the Snap
+        id: build-snap
         uses: boschrexroth/ctrlx-actions/build-snap@v1
         with: 
-            architecture: arm64 #required (amd64/arm64)
+            architecture: arm64 # required ('amd64' or 'arm64')
       - 
         name: Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v0.0.1
-          files: '*.snap'
+          files: ${{steps.build-snap.outputs.path-snap}}
 ```
 
 #### Inputs - Build Snap
-| Name           | Required   | Type    | Description                                                                    |
-|----------------|------------|---------|--------------------------------------------------------------------------------|
-| `architecture` | `true`     | String  | Snap architecture (example: amd64/arm64)                                       |
+
+| Name              | Required   | Type    | Description                                                                    |
+|-------------------|------------|---------|--------------------------------------------------------------------------------|
+| `architecture`    | `true`     | String  | Snap architecture ('amd64' or 'arm64')                                         |
+| `path-app-files`  | `false`    | String  | Path to the app files & snap/snapcraft.yaml (default: $GITHUB_WORKSPACE)       |
+
+#### Outputs - Build Snap
+
+| Name           | Type    | Description                                                                                 |
+|----------------|---------|---------------------------------------------------------------------------------------------|
+| `path-snap`    | String  | Absolute path to the built snap                                                             |
 
 ___
 
 ### Build App
-Create app file 
+
+Build an App for ctrlX. A `.app` file ("App") is a package archive which combines multiple snaps for different architectures (arm64, amd64). It may also contain additional files, like digital signatures. By packaging all in a single file, it enables a simple distribution of an App for ctrlX OS.
 
 #### Example - Build App
+
 ```yaml
-name: build ctrlX app
+name: build ctrlX Snaps and package as App
 
 on: push
 
 jobs:
-  ctrlX:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - 
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v3
       - 
-        name: Build ctrlX snap
+        name: Build snap for amd64
+        id: amd64-build
+        uses: boschrexroth/ctrlx-actions/build-snap@v1
+        with: 
+            architecture: amd64
+      - 
+        name: Build snap for arm64
+        id: arm64-build
+        uses: boschrexroth/ctrlx-actions/build-snap@v1
+        with: 
+            architecture: arm64
+      - 
+        name: Package App for ctrlX OS
+        id: app-build
         uses: boschrexroth/ctrlx-actions/build-app@v1
+        with: 
+            path-amd64-snap: ${{steps.amd64-build.outputs.path-snap}}
+            path-arm64-snap: ${{steps.arm64-build.outputs.path-snap}}
       - 
         name: Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v0.0.1
-          files: binaries.zip
+          files: ${{steps.app-build.outputs.path-app}}
 ```
 
 #### Inputs - Build App
-| Name           | Required   | Type    | Description                                                                    |
-|----------------|------------|---------|--------------------------------------------------------------------------------|
-| `app-name`     | `false`    | String  | Name of the .app file (default: name of repository)                            |
+
+| Name              | Required   | Type    | Description                                                                     |
+|-------------------|------------|---------|---------------------------------------------------------------------------------|
+| `path-amd64-snap` | `false`    | String  | Path to the amd64 snap file (default: '*amd64.snap')                            |
+| `path-arm64-snap` | `false`    | String  | Path to the arm64 snap file (default: '*arm64.snap')                            |
+| `path-app-files`  | `false`    | String  | Path to the app files & snap/snapcraft.yaml (default: $GITHUB_WORKSPACE)        |
+| `app-name`        | `false`    | String  | Name of the .app file (default: name of repository)                             |
+
+#### Outputs - Build Snap
+
+| Name           | Type    | Description                                                                                 |
+|----------------|---------|---------------------------------------------------------------------------------------------|
+| `path-app`     | String  | Absolute path to the built app                                                              |
 
 ___
 
 ### Validate JSON schema
-Validate JSON for ctrlX specific schemas
+
+Validate JSON for ctrlX specific schemas. `.json` files are used at multiple occasions when creating an App for ctrlX. Use this action to validate those json files against corresponding json-schema which are provided by Bosch Rexroth. See: https://github.com/boschrexroth/json-schema
 
 #### Example - Validate JSON schema
+
 ```yaml
 name: validate JSON schema
 
 on: push
 
 jobs:
-  ctrlX:
+  validate:
     runs-on: ubuntu-latest
 
     steps:
@@ -136,16 +182,16 @@ jobs:
         name: Validate JSON
         uses: boschrexroth/ctrlx-actions/validate-json-schema@v1
         with:
-          json-schema: test-schema.json #path to json schema
-          json-file: test-schema.json #path to json file
+          json-file: file.json   # path to json file
 ```
 
 #### Inputs - Validate JSON schema
+
 | Name           | Required   | Type    | Description                                                                    |
 |----------------|------------|---------|--------------------------------------------------------------------------------|
-| `json-schema`  | `true`     | String  | Directory to json schema                                                       |
-| `json-file`    | `true`     | String  | Directory to json file                                                         |
-| `ajv-options`  | `false`    | String  | ajv options to parse (default: --spec=draft2020 --strict=false --all-errors)   |
+| `json-schema`  | `false`    | String  | Path to json schema (default: `package-manifest.v1.1.schema.json`)             |
+| `json-file`    | `true`     | String  | Path to json file                                                              |
+| `ajv-options`  | `false`    | String  | ajv options to parse (default: `--spec=draft2020 --strict=false --all-errors`) |
 
 ___
 

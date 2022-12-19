@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-name: 'Ctrlx Validate JSON Schema'
+name: 'ctrlX Validate JSON Schema'
 description: 'Validate JSON Schema'
 author: 'Bosch Rexroth AG'
 
@@ -41,12 +41,10 @@ runs:
   using: "composite"
   steps:
 
-    - run: |
-        if [ "$RUNNER_OS" != "Linux" ]; then
-          echo "::error::wrong OS, please select runs-on: ubuntu-latest" && exit 1
-        fi
+    - run: "echo ::error::wrong OS, please select runs-on: ubuntu-latest && exit 1"
+      if: runner.os != 'linux'
       shell: bash
-
+      
     - run: |
         url=https://github.com/boschrexroth/json-schema/tree/master/ctrlx-automation/ctrlx-core/apps/package-manifest
         link="$url"/"${{ inputs.json-schema }}"

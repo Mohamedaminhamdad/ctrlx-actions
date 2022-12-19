@@ -20,41 +20,49 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-name: 'Ctrlx Build App'
-description: 'Building Ctrlx App'
+name: 'ctrlX Build App'
+description: 'Building ctrlX App'
 author: 'Bosch Rexroth AG'
 
 inputs:
+  path-amd64-snap:
+    description: 'Absolute path to the amd64 snap'
+    required: false
+    default: '*amd64.snap'
+  path-arm64-snap:
+    description: 'Absolute path to the amd64 snap'
+    required: false
+    default: '*arm64.snap'
+  path-app-files:
+    description: 'Path to the app files'
+    required: false
+    default: $GITHUB_WORKSPACE
   app-name:
     description: 'Name of App'
     required: false
     default: ${{ github.event.repository.name }}
 
+outputs:
+  path-app:
+    description: 'Absolute path to the built app'
+    value: ${{ steps.build-app.outputs.path-app }}
+
 runs:
   using: "composite"
   steps:
 
-    - run: |
-        sudo snap install snapcraft --classic
-        sudo dpkg --add-architecture arm64
-        echo "deb [arch=arm64] http://ports.ubuntu.com/ focal main restricted universe" | sudo tee -a /etc/apt/sources.list.d/multiarch-libs.list
-        echo "deb [arch=arm64] http://ports.ubuntu.com/ focal-updates main restricted universe" | sudo tee -a /etc/apt/sources.list.d/multiarch-libs.list
-        sudo sed -i 's/deb http/deb [arch=amd64] http/g' /etc/apt/sources.list 
+    - run: "echo ::error::wrong OS, please select runs-on: ubuntu-latest && exit 1"
+      if: runner.os != 'linux'
       shell: bash
-    
-    - run: |
-        snapcraft clean --destructive-mode
-        snapcraft --destructive-mode --target-arch=amd64 --enable-experimental-target-arch
-      shell: bash
-    - run: |
-        snapcraft clean --destructive-mode
-        snapcraft --destructive-mode --target-arch=arm64 --enable-experimental-target-arch
-      shell: bash
-    - run: |
+
+    - id: build-app
+      run: |
+        cd ${{ inputs.path-app-files }}
         sudo mkdir -p public/snaps/amd64/release/
         sudo mkdir -p public/snaps/arm64/release/
-        sudo cp *amd64.snap public/snaps/amd64/release/
-        sudo cp *arm64.snap public/snaps/arm64/release/
+        sudo cp ${{ inputs.path-amd64-snap }} public/snaps/amd64/release/
+        sudo cp ${{ inputs.path-arm64-snap }} public/snaps/arm64/release/
         tar -cf ${{ inputs.app-name }}.app public
-        zip -r binaries.zip ${{ inputs.app-name }}.app *.snap
+        #Output absolute path of the app file
+        echo "path-app=$(realpath $(find -name '${{ inputs.app-name }}.app'))" >> $GITHUB_OUTPUT
       shell: bash
